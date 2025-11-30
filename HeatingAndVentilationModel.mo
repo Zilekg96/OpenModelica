@@ -1,0 +1,55 @@
+model HeatingAndVentilationModel
+	replaceable package Medium =
+  Buildings.Media.Air(extraPropertiesNames={"CO2"},
+                      C_nominal={1e-3}) "Medium with CO2 trace substance";
+  Modelica.Fluid.Vessels.ClosedVolume Room(redeclare package Medium = Medium, p_start = 1e5, T_start = 295.15, X_start = {1, 0}, use_portsData = false, use_HeatTransfer = true, redeclare model HeatTransfer = Modelica.Fluid.Vessels.BaseClasses.HeatTransfer.IdealHeatTransfer, V = 44.8, nPorts = 3, final C_start= {0}) annotation(
+    Placement(transformation(extent = {{-10, -10}, {10, 10}})));
+  Modelica.Thermal.HeatTransfer.Sources.FixedHeatFlow fixedHeatFlow(Q_flow = 100) annotation(
+    Placement(transformation(origin = {-44, 0}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Fluid.Valves.ValveDiscrete Door(allowFlowReversal = true, dp_nominal = 1000, m_flow_nominal = 0.3, redeclare package Medium = Medium, opening_min = 0) annotation(
+    Placement(transformation(origin = {34, -44}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Fluid.Sources.FixedBoundary sink(nPorts = 1, redeclare package Medium = Medium, p = 1e5, T = 291.15, X = {1, 0}, C = {0}) annotation(
+    Placement(transformation(origin = {28, -80}, extent = {{-10, -10}, {10, 10}})));
+  inner Modelica.Fluid.System system(p_ambient = 1e5, T_ambient = 293.15, g = 9.81, allowFlowReversal = true) annotation(
+    Placement(transformation(origin = {-74, 64}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Sources.BooleanStep DoorOpened(startValue = true) annotation(
+    Placement(transformation(origin = {60, -10}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Fluid.Sources.FixedBoundary source(redeclare package Medium = Medium, p = 1e5, T = 291.15, X = {1, 0}, nPorts = 1) annotation(
+    Placement(transformation(origin = {-108, -88}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Fluid.Valves.ValveLinear ValveLinear(redeclare package Medium = Medium, dp_nominal(displayUnit = "Pa") = 300, m_flow_nominal = 0.2) annotation(
+    Placement(transformation(origin = {-28, -52}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Blocks.Sources.Step ValveOpening annotation(
+    Placement(transformation(origin = {-66, -36}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Fluid.Machines.PrescribedPump pump(redeclare package Medium = Medium, redeclare function flowCharacteristic = Modelica.Fluid.Machines.BaseClasses.PumpCharacteristics.quadraticFlow(V_flow_nominal = {0.01, 0.15, 0.3}, head_nominal = {220, 200, 120}), N_nominal = 1500, p_a_start = 1e5, p_b_start(displayUnit = "bar") = 100300, m_flow_start = 0.1, T_start = 293.15, X_start = {1, 0}, use_T_start = true, allowFlowReversal = true) annotation(
+    Placement(transformation(origin = {-66, -88}, extent = {{-10, -10}, {10, 10}})));
+  Modelica.Fluid.Valves.ValveLinear ValveLinear1(redeclare package Medium = Medium, dp_nominal(displayUnit = "Pa") = 300, m_flow_nominal = 0.1, allowFlowReversal = true) annotation(
+    Placement(transformation(origin = {26, 36}, extent = {{-10, -10}, {10, 10}})));
+ Buildings.Fluid.Sources.TraceSubstancesFlowSource Source(nPorts = 1, redeclare package Medium = Buildings.Media.Air(extraPropertiesNames = {"CO2"}) "Moist air with CO2", m_flow = 0.1)  annotation(
+    Placement(transformation(origin = {4, 76}, extent = {{-10, -10}, {10, 10}})));
+equation
+  connect(fixedHeatFlow.port, Room.heatPort) annotation(
+    Line(points = {{-34, 0}, {-10, 0}}, color = {191, 0, 0}));
+  connect(Door.port_b, sink.ports[1]) annotation(
+    Line(points = {{44, -44}, {49, -44}, {49, -80}, {38, -80}}, color = {0, 127, 255}));
+  connect(Room.ports[1], Door.port_a) annotation(
+    Line(points = {{0, -10}, {24, -10}, {24, -44}}, color = {0, 127, 255}));
+  connect(Door.open, DoorOpened.y) annotation(
+    Line(points = {{34, -36}, {71, -36}, {71, -10}}, color = {255, 0, 255}));
+  connect(ValveLinear.port_b, Room.ports[2]) annotation(
+    Line(points = {{-18, -52}, {0, -52}, {0, -10}}, color = {0, 127, 255}));
+  connect(ValveOpening.y, ValveLinear.opening) annotation(
+    Line(points = {{-54, -36}, {-28, -36}, {-28, -44}}, color = {0, 0, 127}));
+  connect(pump.port_a, source.ports[1]) annotation(
+    Line(points = {{-76, -88}, {-98, -88}}, color = {0, 127, 255}));
+  connect(ValveLinear.port_a, pump.port_b) annotation(
+    Line(points = {{-38, -52}, {-56, -52}, {-56, -88}}, color = {0, 127, 255}));
+  connect(Room.ports[3], ValveLinear1.port_b) annotation(
+    Line(points = {{0, -10}, {36, -10}, {36, 36}}, color = {0, 127, 255}));
+ connect(Source.ports[1], ValveLinear1.port_a) annotation(
+    Line(points = {{14, 76}, {16, 76}, {16, 36}}, color = {0, 127, 255}));
+  annotation(
+    uses(Modelica(version = "4.0.0"), Buildings(version = "12.1.0")),
+    experiment(StartTime = 0, StopTime = 60, Tolerance = 1e-06, Interval = 0.1),
+    __OpenModelica_commandLineOptions = "--matchingAlgorithm=PFPlusExt --indexReductionMethod=dynamicStateSelection -d=initialization,NLSanalyticJacobian",
+    __OpenModelica_simulationFlags(lv = "LOG_STDOUT,LOG_ASSERT,LOG_STATS", s = "dassl", variableFilter = ".*"));
+end HeatingAndVentilationModel;
