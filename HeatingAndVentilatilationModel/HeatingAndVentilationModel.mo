@@ -8,7 +8,7 @@ model HeatingAndVentilationModel
     Placement(transformation(origin = {-44, 0}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Fluid.Valves.ValveDiscrete Door(allowFlowReversal = true, dp_nominal (displayUnit = "Pa")= 300, m_flow_nominal = 0.3, redeclare package Medium = Medium, opening_min = 0, m_flow(start = 0.1), dp(displayUnit = "Pa"), m_flow_start = 0.1) annotation(
     Placement(transformation(origin = {34, -44}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Fluid.Sources.FixedBoundary sink(nPorts = 1, redeclare package Medium = Medium, p = 1e5, T = 291.15, X = {1, 0}, C = {0}) annotation(
+  Modelica.Fluid.Sources.FixedBoundary sink(nPorts = 1, redeclare package Medium = Medium, p = 1e5, T = 288.15, X = {1, 0}, C = {0}) annotation(
     Placement(transformation(origin = {28, -80}, extent = {{-10, -10}, {10, 10}})));
   inner Modelica.Fluid.System system(p_ambient = 1e5, T_ambient = 293.15, g = 9.81, allowFlowReversal = false) annotation(
     Placement(transformation(origin = {-74, 64}, extent = {{-10, -10}, {10, 10}})));
@@ -22,9 +22,9 @@ model HeatingAndVentilationModel
     Placement(transformation(origin = {26, 36}, extent = {{-10, -10}, {10, 10}})));
  Modelica.Blocks.Sources.Step ValveOpening2(height = 1) annotation(
     Placement(transformation(origin = {64, 66}, extent = {{-10, -10}, {10, 10}})));
- Modelica.Fluid.Sources.MassFlowSource_T Leakage(redeclare package Medium = Medium, use_m_flow_in = false, use_T_in = false, use_X_in = false, use_C_in = false, m_flow = 0.001, T = 291.15, X = {1, 0}, C = {1}, nPorts = 1)  annotation(
+ Modelica.Fluid.Sources.MassFlowSource_T Leakage(redeclare package Medium = Medium, use_m_flow_in = false, use_T_in = false, use_X_in = false, use_C_in = false, m_flow = 0.001, T = 288.15, X = {1, 0}, C = {1}, nPorts = 1)  annotation(
     Placement(transformation(origin = {-22, 76}, extent = {{-10, -10}, {10, 10}})));
- Modelica.Fluid.Sources.MassFlowSource_T Source(nPorts = 1, redeclare package Medium = Medium, m_flow = 0.05, X = {1, 0}, T = 288.15)  annotation(
+ Modelica.Fluid.Sources.MassFlowSource_T Source(nPorts = 1, redeclare package Medium = Medium, m_flow = 0.01, X = {1, 0}, T = 288.15)  annotation(
     Placement(transformation(origin = {-68, -76}, extent = {{-10, -10}, {10, 10}})));
 equation
   connect(Heater.port, Room.heatPort) annotation(

@@ -6,12 +6,12 @@ from OMPython import ModelicaSystem
 model_file = "HeatingAndVentilationModel.mo"
 model_name = "HeatingAndVentilationModel"
 
-m_flow_values = np.linspace(0.02, 0.5, 30)
+m_flow_values = np.linspace(0.05, 0.2, 20)
 temperatures = []
 
 mod = ModelicaSystem(model_file, model_name)
 for i, m_flow in enumerate(m_flow_values):
-    print(f"Run {i+1:02d}/10 → Source.m_flow = {m_flow:.3f} kg/s")
+    print(f"Run {i+1:02d}/20 -> Source.m_flow = {m_flow:.3f} kg/s")
 
     mod.setParameters({"Source.m_flow": m_flow})
 
